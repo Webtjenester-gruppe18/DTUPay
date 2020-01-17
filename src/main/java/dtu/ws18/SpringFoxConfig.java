@@ -1,4 +1,4 @@
-package dtu.ws18.swaggerconfig;
+package dtu.ws18;
 import org.springframework.context.annotation.Bean;
         import org.springframework.context.annotation.Configuration;
         import springfox.documentation.builders.PathSelectors;

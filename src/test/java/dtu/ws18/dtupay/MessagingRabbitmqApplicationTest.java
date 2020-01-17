@@ -18,21 +18,10 @@ package dtu.ws18.dtupay;
 
 /* <<< from https://github.com/spring-guides/gs-messaging-rabbitmq>>>*/
 
-import dtu.ws18.DtupayApplication;
-import dtu.ws18.rabbitmq.Receiver;
-import dtu.ws18.rabbitmq.Runner;
-import org.junit.jupiter.api.Test;
-import org.springframework.amqp.AmqpConnectException;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
+/*
 @SpringBootTest
 public class MessagingRabbitmqApplicationTest {
 
-    @MockBean
-    private Runner runner;
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
@@ -42,17 +31,7 @@ public class MessagingRabbitmqApplicationTest {
 
     @Test
     public void test() throws Exception {
-        try {
 
-
-            rabbitTemplate.convertAndSend(DtupayApplication.queueName,
-                    "emil");
-
-
-        }
-        catch (AmqpConnectException e) {
-            // ignore - rabbit is not running
-        }
     }
 
-}
+}*/
