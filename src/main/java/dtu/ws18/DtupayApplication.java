@@ -32,7 +32,7 @@ public class DtupayApplication {
 
     @Bean
     Binding binding(Queue queue, TopicExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).with("foo.bar.#");
+        return BindingBuilder.bind(queue).to(exchange).with("pay");
     }
 
     @Bean
