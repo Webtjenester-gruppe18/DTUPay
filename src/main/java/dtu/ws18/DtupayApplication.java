@@ -16,9 +16,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @SpringBootApplication
 public class DtupayApplication {
-    public static final String topicExchangeName = "spring-boot-exchange";
+    public static final String topicExchangeName = "dtupay-eventsExchange";
 
-    public static final String queueName = "spring-boot";
+    public static final String queueName = "dtupay-queue";
 
     @Bean
     Queue queue() {

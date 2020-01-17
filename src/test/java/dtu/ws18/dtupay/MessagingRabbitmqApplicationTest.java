@@ -18,8 +18,6 @@ package dtu.ws18.dtupay;
 
 /* <<< from https://github.com/spring-guides/gs-messaging-rabbitmq>>>*/
 
-import java.util.concurrent.TimeUnit;
-
 import dtu.ws18.DtupayApplication;
 import dtu.ws18.rabbitmq.Receiver;
 import dtu.ws18.rabbitmq.Runner;
@@ -45,9 +43,12 @@ public class MessagingRabbitmqApplicationTest {
     @Test
     public void test() throws Exception {
         try {
+
+
             rabbitTemplate.convertAndSend(DtupayApplication.queueName,
-                    "Hello from RabbitMQ!");
-            receiver.getLatch().await(10000, TimeUnit.MILLISECONDS);
+                    "emil");
+
+
         }
         catch (AmqpConnectException e) {
             // ignore - rabbit is not running
