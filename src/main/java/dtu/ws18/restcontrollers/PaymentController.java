@@ -1,4 +1,4 @@
-package dtu.ws18.restendpointcontrollers;
+package dtu.ws18.restcontrollers;
 
 import dtu.ws18.messagingutils.RabbitMQValues;
 import dtu.ws18.models.DTUPayTransaction;
@@ -27,9 +27,9 @@ public class PaymentController {
 
     @RequestMapping(value = "/payments", method = RequestMethod.POST)
     public String performPayment(@RequestBody PaymentRequest paymentRequest) throws InterruptedException {
-        Event event = new Event(EventType.PAYMENT_REQUEST, paymentRequest);
+        Event event = new Event(EventType.TOKEN_VALIDATION_REQUEST, paymentRequest);
 
-        this.rabbitTemplate.convertAndSend("dtupay-eventsExchange", RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY,event);
+        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, event);
   /*      while (completed==null){
         counter++;
         }
