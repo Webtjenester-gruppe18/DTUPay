@@ -1,19 +1,45 @@
 package dtu.ws18.restcontrollers;
 
-import dtu.ws18.models.CustomerReportTransaction;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import dtu.ws18.messagingutils.RabbitMQValues;
+import dtu.ws18.models.DTUPayTransaction;
+import dtu.ws18.models.Event;
+import dtu.ws18.models.EventType;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class ReportingController {
 
-    @RequestMapping(value = "/reports/{cpr}", method = RequestMethod.GET)
-    public ArrayList<CustomerReportTransaction> getTransactionReportByCpr(@PathVariable @NotNull String cpr) {
-        return new ArrayList<>();
+    private RabbitTemplate rabbitTemplate;
+    public static CompletableFuture<ArrayList<DTUPayTransaction>> reportFuture;
+
+    @Autowired
+    public ReportingController(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+
+    }
+
+    @RequestMapping(value = "/reports/{accountId}", method = RequestMethod.GET)
+    public ResponseEntity<ArrayList<DTUPayTransaction>> getTransactionReportByCpr(@PathVariable @NotNull String accountId) {
+
+        Event requestTransactions = new Event(EventType.REQUEST_TRANSACTIONS, accountId);
+
+        reportFuture = new CompletableFuture<>();
+
+        this.rabbitTemplate.convertAndSend(
+                RabbitMQValues.TOPIC_EXCHANGE_NAME,
+                RabbitMQValues.PAYMENT_SERVICE_ROUTING_KEY,
+                requestTransactions);
+
+        ArrayList<DTUPayTransaction> response = reportFuture.join();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
