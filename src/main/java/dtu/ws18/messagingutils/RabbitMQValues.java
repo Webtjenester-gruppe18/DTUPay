@@ -2,7 +2,7 @@ package dtu.ws18.messagingutils;
 
 public class RabbitMQValues {
     public static final String TOPIC_EXCHANGE_NAME = "dtupay-eventsExchange";
-    static final String DTU_SERVICE_QUEUE_NAME = "dtupayservice-queue";
+    public static final String DTU_SERVICE_QUEUE_NAME = "dtupayservice-queue";
     public static final String DTU_SERVICE_ROUTING_KEY = "dtupay";
     static final String PAYMENT_SERVICE_QUEUE_NAME = "paymentservice-queue";
     public static final String PAYMENT_SERVICE_ROUTING_KEY = "payment";
