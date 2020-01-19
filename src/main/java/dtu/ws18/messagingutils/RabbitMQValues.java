@@ -9,8 +9,8 @@ public class RabbitMQValues {
     static final String TOKEN_SERVICE_QUEUE_NAME = "tokenservice-queue";
     public static final String TOKEN_SERVICE_ROUTING_KEY = "token";
     public static final String USER_SERVICE_QUEUE_NAME = "userservice-queue";
-    static final String USER_SERVICE_ROUTING_KEY = "user";
+    public static final String USER_SERVICE_ROUTING_KEY = "user";
     public static final String REPORTING_SERVICE_QUEUE_NAME = "reportingservice-queue";
-    static final String REPORTING_SERVICE_ROUTING_KEY = "reporting";
+    public static final String REPORTING_SERVICE_ROUTING_KEY = "reporting";
 
 }

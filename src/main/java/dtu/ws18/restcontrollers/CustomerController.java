@@ -31,6 +31,9 @@ public class CustomerController {
 
     @RequestMapping(value = "/accounts/{cpr}", method = RequestMethod.GET)
     public Customer getCustomerByCpr(@PathVariable @NotNull String cpr) {
+        Event customerRequest = new Event(EventType.RETRIEVE_CUSTOMER, cpr);
+        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
+
         return new Customer();
     }
 
@@ -46,7 +49,7 @@ public class CustomerController {
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, tokenRequest);
         ArrayList<Token> response = tokenListFuture.join();
         if (response.isEmpty()) {
-            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(response,HttpStatus.OK);
         }
