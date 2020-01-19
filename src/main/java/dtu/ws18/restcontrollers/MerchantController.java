@@ -19,7 +19,7 @@ public class MerchantController {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public void MerchantController(RabbitTemplate rabbitTemplate){
+    public MerchantController(RabbitTemplate rabbitTemplate){
         this.rabbitTemplate = rabbitTemplate;
 
     }

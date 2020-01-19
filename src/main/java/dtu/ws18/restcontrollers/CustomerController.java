@@ -19,8 +19,9 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/customers")
 public class CustomerController {
     private RabbitTemplate rabbitTemplate;
-    public static CompletableFuture<EventType> tokenFuture;
-    public static CompletableFuture<ArrayList<Token>> tokenListFuture;
+    public static CompletableFuture<String> customerDeleteFuture;
+    public static CompletableFuture<Customer> customerGetFuture;
+    public static CompletableFuture<String> customerPostFuture;
 
 
     @Autowired
@@ -37,31 +38,26 @@ public class CustomerController {
         return new Customer();
     }
 
-    @RequestMapping(value = "/reports/{cpr}", method = RequestMethod.GET)
-    public ArrayList<CustomerReportTransaction> getTransactionReportByCpr(@PathVariable @NotNull String cpr) {
-        return new ArrayList<>();
+    @RequestMapping(value = "/accounts/{cpr}", method = RequestMethod.POST)
+    public Customer PostCustomerByCpr(@PathVariable @NotNull String cpr) {
+        Event customerRequest = new Event(EventType.DELETE_CUSTOMER, cpr);
+        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
+
+        return new Customer();
     }
 
-    @RequestMapping(value = "/tokens/{cpr}", method = RequestMethod.GET)
-    public ResponseEntity<ArrayList<Token>> getTokensByCpr(@PathVariable @NotNull String cpr) {
-        Event tokenRequest = new Event(EventType.RETRIEVE_TOKENS, cpr);
-        tokenListFuture = new CompletableFuture<>();
-        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, tokenRequest);
-        ArrayList<Token> response = tokenListFuture.join();
-        if (response.isEmpty()) {
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(response,HttpStatus.OK);
-        }
+    @RequestMapping(value = "/accounts/{cpr}", method = RequestMethod.DELETE)
+    public Customer deleteCustomerByCpr(@PathVariable @NotNull String cpr) {
+        Event customerRequest = new Event(EventType.DELETE_CUSTOMER, cpr);
+        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
+
+        return new Customer();
     }
 
-    @RequestMapping(value = "/tokens/{cpr}", method = RequestMethod.POST)
-    public EventType createTokensByCpr(@PathVariable @NotNull String cpr) throws InterruptedException {
 
-        Event tokenRequest = new Event(EventType.REQUEST_FOR_NEW_TOKENS, cpr);
-        tokenFuture = new CompletableFuture<>();
-        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, tokenRequest);
-        return tokenFuture.join();
-    }
+
+
+
+
 
 }

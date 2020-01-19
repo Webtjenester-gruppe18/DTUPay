@@ -5,6 +5,7 @@ import dtu.ws18.models.Event;
 import dtu.ws18.models.EventType;
 import dtu.ws18.models.Token;
 import dtu.ws18.restcontrollers.CustomerController;
+import dtu.ws18.restcontrollers.TokenController;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
@@ -35,12 +36,12 @@ public class Listener {
 
         }
         else if (event.getType().equals(EventType.TOKEN_GENERATION_SUCCEED)||event.getType().equals(EventType.TOKEN_GENERATION_FAILED)) {
-            CustomerController.tokenFuture.complete(event.getType());
+            TokenController.tokenFuture.complete(event.getType());
 
         }
         else if (event.getType().equals(EventType.RETRIEVE_TOKENS_SUCCEED)||event.getType().equals(EventType.RETRIEVE_TOKENS_FAILED)) {
             ArrayList<Token> tokens = objectMapper.convertValue(event.getObject(),ArrayList.class);
-            CustomerController.tokenListFuture.complete(tokens);
+            TokenController.tokenListFuture.complete(tokens);
         }
 
     }
