@@ -29,7 +29,7 @@ public class MerchantController {
     }
 
     @RequestMapping(value = "/reports/{cpr}", method = RequestMethod.GET)
-    public ArrayList<MerchantReportTransaction> getTransactionReport(@PathVariable @NotNull String cpr) {
+    public ArrayList<MerchantReportTransaction> getTransactionReportByCpr(@PathVariable @NotNull String cpr) {
         return new ArrayList<>();
     }
 
