@@ -1,18 +1,16 @@
 package dtu.ws18.restcontrollers;
 
 import dtu.ws18.messagingutils.RabbitMQValues;
-import dtu.ws18.models.*;
+import dtu.ws18.models.Customer;
+import dtu.ws18.models.Event;
+import dtu.ws18.models.EventType;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -30,34 +28,44 @@ public class CustomerController {
 
     }
 
-    @RequestMapping(value = "/accounts/{cpr}", method = RequestMethod.GET)
-    public Customer getCustomerByCpr(@PathVariable @NotNull String cpr) {
+    @RequestMapping(value = "/{cpr}", method = RequestMethod.GET)
+    public ResponseEntity<Customer> getCustomerByCpr(@PathVariable @NotNull String cpr) {
         Event customerRequest = new Event(EventType.RETRIEVE_CUSTOMER, cpr);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
-
-        return new Customer();
+        Customer customer = customerGetFuture.join();
+        if (customer != null) {
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
-    @RequestMapping(value = "/accounts/{cpr}", method = RequestMethod.POST)
-    public Customer PostCustomerByCpr(@PathVariable @NotNull String cpr) {
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<String> PostCustomer(@RequestBody Customer customer) {
+        Event customerRequest = new Event(EventType.CREATE_CUSTOMER, customer);
+        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
+        String response = customerPostFuture.join();
+        if (response.equals("Created")) {
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        }
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @RequestMapping(value = "/{cpr}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> deleteCustomerByCpr(@PathVariable @NotNull String cpr) {
         Event customerRequest = new Event(EventType.DELETE_CUSTOMER, cpr);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
-
-        return new Customer();
+        String response = customerDeleteFuture.join();
+        if (response.equals("Deleted")) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
-    @RequestMapping(value = "/accounts/{cpr}", method = RequestMethod.DELETE)
-    public Customer deleteCustomerByCpr(@PathVariable @NotNull String cpr) {
-        Event customerRequest = new Event(EventType.DELETE_CUSTOMER, cpr);
-        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
-
-        return new Customer();
-    }
-
-
-
-
-
-
-
 }
+
+
+
+
+
+
+
+

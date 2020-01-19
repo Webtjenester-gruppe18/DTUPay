@@ -1,12 +1,8 @@
 package dtu.ws18.messagingutils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dtu.ws18.models.DTUPayTransaction;
-import dtu.ws18.models.Event;
-import dtu.ws18.models.EventType;
-import dtu.ws18.models.Token;
-import dtu.ws18.restcontrollers.ReportingController;
-import dtu.ws18.restcontrollers.TokenController;
+import dtu.ws18.models.*;
+import dtu.ws18.restcontrollers.*;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
@@ -25,25 +21,37 @@ public class Listener {
     @RabbitListener(queues = {RabbitMQValues.DTU_SERVICE_QUEUE_NAME})
     public void receiveEvent(Event event) {
 
-        System.out.println(event.getType());
 
-        if (event.getType().equals(EventType.MONEY_TRANSFER_SUCCEED)) {
-
-            // return 200 to the rest caller
-
-        } else if (event.getType().equals(EventType.MONEY_TRANSFER_FAILED)) {
-
-            // return failure to the rest caller
-
+        if (event.getType().equals(EventType.MONEY_TRANSFER_SUCCEED)||event.getType().equals(EventType.MONEY_TRANSFER_FAILED)) {
+            PaymentController.paymentFuture.complete(event);
         } else if (event.getType().equals(EventType.TOKEN_GENERATION_SUCCEED) || event.getType().equals(EventType.TOKEN_GENERATION_FAILED)) {
             TokenController.tokenFuture.complete(event.getType());
-
         } else if (event.getType().equals(EventType.RETRIEVE_TOKENS_SUCCEED) || event.getType().equals(EventType.RETRIEVE_TOKENS_FAILED)) {
             ArrayList<Token> tokens = objectMapper.convertValue(event.getObject(), ArrayList.class);
             TokenController.tokenListFuture.complete(tokens);
         } else if (event.getType().equals(EventType.REQUEST_TRANSACTIONS_SUCCEED)) {
             ArrayList<DTUPayTransaction> transactions = objectMapper.convertValue(event.getObject(), ArrayList.class);
             ReportingController.reportFuture.complete(transactions);
+        } else if (event.getType().equals(EventType.CREATE_CUSTOMER_RESPONSE)) {
+            String response = objectMapper.convertValue(event.getObject(), String.class);
+            CustomerController.customerPostFuture.complete(response);
+        } else if (event.getType().equals(EventType.DELETE_CUSTOMER_RESPONSE)) {
+            String response = objectMapper.convertValue(event.getObject(), String.class);
+            CustomerController.customerDeleteFuture.complete(response);
+        } else if (event.getType().equals(EventType.RETRIEVE_CUSTOMER_RESPONSE)) {
+            Customer response = objectMapper.convertValue(event.getObject(), Customer.class);
+            CustomerController.customerGetFuture.complete(response);
+        } else if (event.getType().equals(EventType.CREATE_MERCHANT_RESPONSE)) {
+            String response = objectMapper.convertValue(event.getObject(), String.class);
+            MerchantController.merchantPostFuture.complete(response);
+        } else if (event.getType().equals(EventType.DELETE_MERCHANT_RESPONSE)) {
+            String response = objectMapper.convertValue(event.getObject(), String.class);
+            MerchantController.merchantDeleteFuture.complete(response);
+        } else if (event.getType().equals(EventType.RETRIEVE_MERCHANT_RESPONSE)) {
+            Merchant response = objectMapper.convertValue(event.getObject(), Merchant.class);
+            MerchantController.merchantGetFuture.complete(response);
+
+
         }
 
     }
