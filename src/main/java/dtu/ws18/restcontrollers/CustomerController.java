@@ -1,8 +1,7 @@
 package dtu.ws18.restcontrollers;
 
-import dtu.ws18.models.Customer;
-import dtu.ws18.models.CustomerReportTransaction;
-import dtu.ws18.models.Token;
+import dtu.ws18.messagingutils.RabbitMQValues;
+import dtu.ws18.models.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -35,6 +34,16 @@ public class CustomerController {
     @RequestMapping(value = "/tokens/{cpr}", method = RequestMethod.GET)
     public ArrayList<Token> getTokens(@PathVariable @NotNull String cpr) {
         return new ArrayList<>();
+    }
+
+    @RequestMapping(value = "/tokens/{cpr}", method = RequestMethod.POST)
+    public boolean requestForNewTokens(@PathVariable @NotNull String cpr) {
+
+        Event tokenRequest = new Event(EventType.REQUEST_FOR_NEW_TOKENS, cpr);
+
+        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, tokenRequest);
+
+        return true;
     }
 
 }
