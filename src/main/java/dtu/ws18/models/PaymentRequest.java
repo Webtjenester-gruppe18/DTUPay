@@ -8,9 +8,11 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Payment implements Serializable {
+public class PaymentRequest implements Serializable {
     String fromAccountNumber;
+    String cpr;
     String toAccountNumber;
     BigDecimal amount;
     String description;
+    Token token;
 }
