@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class PaymentController {
     private RabbitTemplate rabbitTemplate;
     public static CompletableFuture<Event> paymentFuture;
+    public static CompletableFuture<Event> refundFuture;
     private ObjectMapper objectMapper;
 
 
@@ -33,6 +34,7 @@ public class PaymentController {
     @RequestMapping(value = "/payments", method = RequestMethod.POST)
     public ResponseEntity<String> createPayment(@RequestBody PaymentRequest paymentRequest) throws InterruptedException {
         Event event = new Event(EventType.TOKEN_VALIDATION_REQUEST, paymentRequest);
+        paymentFuture = new CompletableFuture<>();
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, event);
         Event responseEvent = paymentFuture.join();
         String response = objectMapper.convertValue(responseEvent.getObject(), String.class);
@@ -45,7 +47,21 @@ public class PaymentController {
     }
 
     @RequestMapping(value = "/refunds", method = RequestMethod.POST)
-    public String createRefund(@RequestBody DTUPayTransaction p) {
-        return p.getDescription();
+    public ResponseEntity<String> createRefund(@RequestBody DTUPayTransaction transaction) {
+
+        Event requestEvent = new Event(EventType.REFUND_REQUEST, transaction);
+        refundFuture = new CompletableFuture<>();
+        this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.PAYMENT_SERVICE_ROUTING_KEY, requestEvent);
+
+        Event event = refundFuture.join();
+        String response = objectMapper.convertValue(event.getObject(), String.class);
+
+        if(event.getType().equals(EventType.REFUND_REQUEST_SUCCESS_RESPONSE)){
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }else if(event.getType().equals(EventType.REFUND_REQUEST_FAILURE_RESPONSE)){
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

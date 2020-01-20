@@ -50,8 +50,8 @@ public class Listener {
         } else if (event.getType().equals(EventType.RETRIEVE_MERCHANT_RESPONSE)) {
             Merchant response = objectMapper.convertValue(event.getObject(), Merchant.class);
             MerchantController.merchantGetFuture.complete(response);
-
-
+        } else if (event.getType().equals(EventType.REFUND_REQUEST_RESPONSE)) {
+            PaymentController.refundFuture.complete(event);
         }
 
     }

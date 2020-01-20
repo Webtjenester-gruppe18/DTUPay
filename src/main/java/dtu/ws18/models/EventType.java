@@ -3,6 +3,8 @@ package dtu.ws18.models;
 public enum EventType {
     PAYMENT_REQUEST,
     REFUND_REQUEST,
+    REFUND_REQUEST_SUCCESS_RESPONSE,
+    REFUND_REQUEST_FAILURE_RESPONSE,
 
     //Retrieve customer profile
     RETRIEVE_CUSTOMER,
