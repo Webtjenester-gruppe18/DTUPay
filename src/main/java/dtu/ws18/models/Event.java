@@ -9,12 +9,16 @@ import java.io.Serializable;
 @Setter
 @NoArgsConstructor
 public class Event implements Serializable {
- public Event (EventType type, Object object){
+
+ private EventType type;
+ private Object object;
+ private String routingKey;
+
+ public Event (EventType type, Object object, String routingKey){
   this.object = object;
   this.type = type;
-
+  this.routingKey = routingKey;
  }
- EventType type;
- Object object;
+
 
 }
