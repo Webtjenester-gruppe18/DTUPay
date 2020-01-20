@@ -32,7 +32,7 @@ public class PaymentController {
 
     @RequestMapping(value = "/payments", method = RequestMethod.POST)
     public ResponseEntity<String> createPayment(@RequestBody PaymentRequest paymentRequest) throws InterruptedException {
-        Event event = new Event(EventType.TOKEN_VALIDATION_REQUEST, paymentRequest);
+        Event event = new Event(EventType.TOKEN_VALIDATION_REQUEST, paymentRequest, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, event);
         Event responseEvent = paymentFuture.join();
         String response = objectMapper.convertValue(responseEvent.getObject(), String.class);

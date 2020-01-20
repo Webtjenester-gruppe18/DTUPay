@@ -29,7 +29,7 @@ public class MerchantController {
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.GET)
     public ResponseEntity<Merchant> getMerchantByCpr(@PathVariable @NotNull String cpr) {
-        Event merchantRequest = new Event(EventType.RETRIEVE_MERCHANT, cpr);
+        Event merchantRequest = new Event(EventType.RETRIEVE_MERCHANT, cpr, RabbitMQValues.USER_SERVICE_ROUTING_KEY);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, merchantRequest);
         Merchant merchant = merchantGetFuture.join();
         if (merchant != null) {
@@ -40,7 +40,7 @@ public class MerchantController {
 
     @RequestMapping( method = RequestMethod.POST)
     public ResponseEntity<String> PostMerchant(@RequestBody Merchant merchant) {
-        Event merchantRequest = new Event(EventType.CREATE_MERCHANT, merchant);
+        Event merchantRequest = new Event(EventType.CREATE_MERCHANT, merchant, RabbitMQValues.USER_SERVICE_ROUTING_KEY);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, merchantRequest);
         String response = merchantPostFuture.join();
         if (response.equals("Created")) {
@@ -51,7 +51,7 @@ public class MerchantController {
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteMerchantByCpr(@PathVariable @NotNull String cpr) {
-        Event merchantRequest = new Event(EventType.DELETE_MERCHANT, cpr);
+        Event merchantRequest = new Event(EventType.DELETE_MERCHANT, cpr, RabbitMQValues.USER_SERVICE_ROUTING_KEY);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, merchantRequest);
         String response = merchantDeleteFuture.join();
         if (response.equals("Deleted")) {

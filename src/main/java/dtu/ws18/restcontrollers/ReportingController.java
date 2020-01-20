@@ -29,7 +29,7 @@ public class ReportingController {
     @RequestMapping(value = "/reports/{accountId}", method = RequestMethod.GET)
     public ResponseEntity<ArrayList<DTUPayTransaction>> getTransactionReportByCpr(@PathVariable @NotNull String accountId) {
 
-        Event requestTransactions = new Event(EventType.REQUEST_TRANSACTIONS, accountId);
+        Event requestTransactions = new Event(EventType.REQUEST_TRANSACTIONS, accountId, RabbitMQValues.PAYMENT_SERVICE_ROUTING_KEY);
 
         reportFuture = new CompletableFuture<>();
 

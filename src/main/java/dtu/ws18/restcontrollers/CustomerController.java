@@ -30,7 +30,7 @@ public class CustomerController {
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.GET)
     public ResponseEntity<Object> getCustomerByCpr(@PathVariable @NotNull String cpr) {
-        Event customerRequest = new Event(EventType.RETRIEVE_CUSTOMER, cpr);
+        Event customerRequest = new Event(EventType.RETRIEVE_CUSTOMER,cpr,RabbitMQValues.USER_SERVICE_ROUTING_KEY);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
         Customer customer = customerGetFuture.join();
         if (customer != null) {
@@ -41,7 +41,7 @@ public class CustomerController {
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<String> PostCustomer(@RequestBody Customer customer) {
-        Event customerRequest = new Event(EventType.CREATE_CUSTOMER, customer);
+        Event customerRequest = new Event(EventType.CREATE_CUSTOMER, customer, RabbitMQValues.USER_SERVICE_ROUTING_KEY );
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
         String response = customerPostFuture.join();
         if (response.equals("Created")) {
@@ -52,7 +52,7 @@ public class CustomerController {
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.DELETE)
     public ResponseEntity<String> deleteCustomerByCpr(@PathVariable @NotNull String cpr) {
-        Event customerRequest = new Event(EventType.DELETE_CUSTOMER, cpr);
+        Event customerRequest = new Event(EventType.DELETE_CUSTOMER, cpr, RabbitMQValues.USER_SERVICE_ROUTING_KEY);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
         String response = customerDeleteFuture.join();
         if (response.equals("Deleted")) {

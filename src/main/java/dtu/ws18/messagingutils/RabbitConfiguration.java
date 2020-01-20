@@ -12,13 +12,14 @@ public class RabbitConfiguration {
     public MessageConverter jsonConverter() {
         return new Jackson2JsonMessageConverter();
     }
+
     @Bean
     public Declarables topicBindings() {
-        Queue payment_service_queue = new Queue(RabbitMQValues.PAYMENT_SERVICE_QUEUE_NAME, false);
-        Queue token_service_queue = new Queue(RabbitMQValues.TOKEN_SERVICE_QUEUE_NAME, false);
-        Queue dtu_service_queue = new Queue(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, false);
-        Queue user_service_queue = new Queue(RabbitMQValues.USER_SERVICE_QUEUE_NAME, false);
-        Queue reporting_service_queue = new Queue(RabbitMQValues.REPORTING_SERVICE_QUEUE_NAME, false);
+        Queue payment_service_queue = new Queue(RabbitMQValues.PAYMENT_SERVICE_QUEUE_NAME, true);
+        Queue token_service_queue = new Queue(RabbitMQValues.TOKEN_SERVICE_QUEUE_NAME, true);
+        Queue dtu_service_queue = new Queue(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, true);
+        Queue user_service_queue = new Queue(RabbitMQValues.USER_SERVICE_QUEUE_NAME, true);
+        Queue reporting_service_queue = new Queue(RabbitMQValues.REPORTING_SERVICE_QUEUE_NAME, true);
 
        TopicExchange topicExchange = new TopicExchange(RabbitMQValues.TOPIC_EXCHANGE_NAME);
         return new Declarables(

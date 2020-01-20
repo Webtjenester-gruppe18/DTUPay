@@ -29,7 +29,7 @@ public class TokenController {
 
     @RequestMapping(value = "/tokens/{cpr}", method = RequestMethod.GET)
     public ResponseEntity<ArrayList<Token>> getTokensByCpr(@PathVariable @NotNull String cpr) {
-        Event tokenRequest = new Event(EventType.RETRIEVE_TOKENS, cpr);
+        Event tokenRequest = new Event(EventType.RETRIEVE_TOKENS, cpr, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY);
         tokenListFuture = new CompletableFuture<>();
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, tokenRequest);
         ArrayList<Token> response = tokenListFuture.join();
@@ -43,7 +43,7 @@ public class TokenController {
     @RequestMapping(value = "/tokens/{cpr}", method = RequestMethod.POST)
     public EventType createTokensByCpr(@PathVariable @NotNull String cpr) throws InterruptedException {
 
-        Event tokenRequest = new Event(EventType.REQUEST_FOR_NEW_TOKENS, cpr);
+        Event tokenRequest = new Event(EventType.REQUEST_FOR_NEW_TOKENS, cpr, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY);
         tokenFuture = new CompletableFuture<>();
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY, tokenRequest);
         return tokenFuture.join();

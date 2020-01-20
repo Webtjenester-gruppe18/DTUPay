@@ -20,6 +20,7 @@ public class Listener {
 
     @RabbitListener(queues = {RabbitMQValues.DTU_SERVICE_QUEUE_NAME})
     public void receiveEvent(Event event) {
+        System.out.println("Front received " + event.getType());
 
 
         if (event.getType().equals(EventType.MONEY_TRANSFER_SUCCEED)||event.getType().equals(EventType.MONEY_TRANSFER_FAILED)) {
