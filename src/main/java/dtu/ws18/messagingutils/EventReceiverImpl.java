@@ -7,6 +7,18 @@ import com.rabbitmq.client.DeliverCallback;
 import dtu.ws18.models.Event;
 import gherkin.deps.com.google.gson.Gson;
 
+/*
+Boilerplate from @Author Hubert Baumeister demoproject
+Replaced old code, to allow cucumber tests to work properly
+@Service
+public class Listener {
+    private ObjectMapper objectMapper;
+    public Listener(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+    @RabbitListener(queues = {RabbitMQValues.DTU_SERVICE_QUEUE_NAME})
+    public void receiveEvent(Event event) { }
+*/
 
 public class EventReceiverImpl {
     private IEventReceiver eventReceiver;
@@ -19,8 +31,7 @@ public class EventReceiverImpl {
         ConnectionFactory factory = new ConnectionFactory();
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.queueBind(RabbitMQValues.TOKEN_SERVICE_QUEUE_NAME, RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY); //Change Queuename and routing key
-
+        channel.queueBind(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.DTU_SERVICE_ROUTING_KEY); //Change Queuename and routing key
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
             Event event = new Gson().fromJson(message, Event.class);
@@ -30,7 +41,7 @@ public class EventReceiverImpl {
                 throw new Error(e);
             }
         };
-        channel.basicConsume(RabbitMQValues.TOKEN_SERVICE_QUEUE_NAME, true, deliverCallback, consumerTag -> {   //Change Queue name
+        channel.basicConsume(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, true, deliverCallback, consumerTag -> {   //Change Queue name
         });
     }
 }
