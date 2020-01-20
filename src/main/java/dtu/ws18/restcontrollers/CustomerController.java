@@ -29,14 +29,14 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.GET)
-    public ResponseEntity<Customer> getCustomerByCpr(@PathVariable @NotNull String cpr) {
+    public ResponseEntity<Object> getCustomerByCpr(@PathVariable @NotNull String cpr) {
         Event customerRequest = new Event(EventType.RETRIEVE_CUSTOMER, cpr);
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.USER_SERVICE_ROUTING_KEY, customerRequest);
         Customer customer = customerGetFuture.join();
         if (customer != null) {
             return new ResponseEntity<>(customer, HttpStatus.OK);
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Customer with that cpr not found", HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(method = RequestMethod.POST)
