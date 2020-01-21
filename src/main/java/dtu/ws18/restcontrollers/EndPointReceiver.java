@@ -3,10 +3,6 @@ package dtu.ws18.restcontrollers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dtu.ws18.messagingutils.IEventReceiver;
 import dtu.ws18.models.*;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -39,9 +35,9 @@ public class EndPointReceiver implements IEventReceiver {
                 response = objectMapper.convertValue(event.getObject(), String.class);
                 CustomerController.customerDeleteFuture.complete(response);
                 break;
-            case RETRIEVE_CUSTOMER_RESPONSE:
-                Customer customer = objectMapper.convertValue(event.getObject(), Customer.class);
-                CustomerController.customerGetFuture.complete(customer);
+            case RETRIEVE_CUSTOMER_RESPONSE_SUCCESS:
+            case RETRIEVE_CUSTOMER_RESPONSE_FAILED:
+                CustomerController.customerGetFuture.complete(event);
                 break;
             case CREATE_MERCHANT_RESPONSE:
                 response = objectMapper.convertValue(event.getObject(), String.class);
