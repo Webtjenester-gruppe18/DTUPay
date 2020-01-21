@@ -32,6 +32,7 @@ public class EventReceiverImpl {
     @SneakyThrows
     public void listen() {
         ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("rabbitmq");
         Connection connection = factory.newConnection();
         Channel channel = null;
         try {

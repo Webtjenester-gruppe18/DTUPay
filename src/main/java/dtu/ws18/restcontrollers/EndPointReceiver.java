@@ -24,6 +24,7 @@ public class EndPointReceiver implements IEventReceiver {
     @Override
     public void receiveEvent(Event event) throws Exception {
         String response;
+
         switch (event.getType()) {
             case TOKEN_GENERATION_RESPONSE:
                 TokenController.tokenFuture.complete(event.getType());
