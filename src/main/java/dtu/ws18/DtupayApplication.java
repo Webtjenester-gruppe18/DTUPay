@@ -4,6 +4,7 @@ import dtu.ws18.messagingutils.EventReceiverImpl;
 import dtu.ws18.messagingutils.RabbitConfiguration;
 import dtu.ws18.restcontrollers.EndPointReceiver;
 import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.AsyncRabbitTemplate;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -28,19 +29,16 @@ import java.util.Arrays;
 @EnableRabbit
 @SpringBootApplication
 public class DtupayApplication {
-    RabbitTemplate rabbitTemplate;
+
     @Autowired
     DtupayApplication(RabbitTemplate rabbitTemplate){
-    this.rabbitTemplate = rabbitTemplate;
-    RabbitAdmin admin = new RabbitAdmin(rabbitTemplate);
-    admin.initialize();
-    EndPointReceiver endPointReceiver = new EndPointReceiver();
+    rabbitTemplate.convertAndSend(">>Initializing...");
         try {
+            EndPointReceiver endPointReceiver = new EndPointReceiver();
             new EventReceiverImpl(endPointReceiver).listen();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        rabbitTemplate.convertAndSend("Hej");
     }
     public static void main(String[] args) throws Exception {
         SpringApplication.run(DtupayApplication.class, args);

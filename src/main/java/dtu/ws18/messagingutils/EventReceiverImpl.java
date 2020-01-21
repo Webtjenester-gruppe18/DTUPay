@@ -6,6 +6,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import dtu.ws18.models.Event;
 import gherkin.deps.com.google.gson.Gson;
+import lombok.SneakyThrows;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.Queue;
@@ -15,8 +16,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 /*
-Boilerplate from @Author Hubert Baumeister demoproject
+Boilerplate from @Author Hubert Baumeister demoproject with a few modifications
 Replaced old code, to allow cucumber tests to work properly
 @Service
 public class Listener {
@@ -35,11 +38,20 @@ public class EventReceiverImpl {
         this.eventReceiver = eventReceiver;
 
     }
-    public void listen() throws Exception {
+    @SneakyThrows
+    public void listen() {
         ConnectionFactory factory = new ConnectionFactory();
         Connection connection = factory.newConnection();
-        Channel channel = connection.createChannel();
-        channel.queueBind(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.DTU_SERVICE_ROUTING_KEY); //Change Queuename and routing key
+        Channel channel = null;
+        try {
+            channel = connection.createChannel();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+            channel.queueBind(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.DTU_SERVICE_ROUTING_KEY); //Change Queuename and routing key
+
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");
             Event event = new Gson().fromJson(message, Event.class);
