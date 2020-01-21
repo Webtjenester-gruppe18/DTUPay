@@ -8,6 +8,7 @@ import dtu.ws18.models.DTUPayTransaction;
 import dtu.ws18.models.Event;
 import dtu.ws18.models.EventType;
 import dtu.ws18.models.PaymentRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,12 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-public class PaymentController implements IEventReceiver {
-    private CompletableFuture<Event> paymentFuture;
-    private CompletableFuture<Event> refundFuture;
+public class PaymentController {
+    static CompletableFuture<Event> paymentFuture;
+    static CompletableFuture<Event> refundFuture;
     private ObjectMapper objectMapper;
     private IEventSender eventSender;
 
+    @Autowired
     public PaymentController(IEventSender eventSender) {
         this.objectMapper = new ObjectMapper();
         this.eventSender = eventSender;
@@ -57,16 +59,5 @@ public class PaymentController implements IEventReceiver {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @Override
-    public void receiveEvent(Event event) throws Exception {
-        if (event.getType().equals(EventType.MONEY_TRANSFER_SUCCEED) || event.getType().equals(EventType.MONEY_TRANSFER_FAILED)) {
-            paymentFuture.complete(event);
-        }
-        if (event.getType().equals(EventType.REFUND_REQUEST_RESPONSE)) {
-            refundFuture.complete(event);
-        }
-
     }
 }

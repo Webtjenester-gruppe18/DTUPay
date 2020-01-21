@@ -1,12 +1,11 @@
 package dtu.ws18.restcontrollers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dtu.ws18.messagingutils.IEventReceiver;
 import dtu.ws18.messagingutils.IEventSender;
 import dtu.ws18.messagingutils.RabbitMQValues;
 import dtu.ws18.models.Event;
 import dtu.ws18.models.EventType;
 import dtu.ws18.models.Token;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,16 +18,14 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-public class TokenController implements IEventReceiver {
+public class TokenController {
     private IEventSender eventSender;
-    private ObjectMapper objectMapper;
-    private CompletableFuture<EventType> tokenFuture;
-    private CompletableFuture<ArrayList<Token>> tokenListFuture;
+    static CompletableFuture<EventType> tokenFuture;
+    static CompletableFuture<ArrayList<Token>> tokenListFuture;
 
+    @Autowired
     public TokenController(IEventSender eventSender) {
         this.eventSender = eventSender;
-        this.objectMapper = new ObjectMapper();
-
     }
 
 
@@ -54,13 +51,4 @@ public class TokenController implements IEventReceiver {
         return tokenFuture.join();
     }
 
-    @Override
-    public void receiveEvent(Event event) {
-        if (event.getType().equals(EventType.TOKEN_GENERATION_SUCCEED) || event.getType().equals(EventType.TOKEN_GENERATION_FAILED)) {
-            tokenFuture.complete(event.getType());
-        } else if (event.getType().equals(EventType.RETRIEVE_TOKENS_SUCCEED) || event.getType().equals(EventType.RETRIEVE_TOKENS_FAILED)) {
-            ArrayList<Token> tokens = objectMapper.convertValue(event.getObject(), ArrayList.class);
-            tokenListFuture.complete(tokens);
-        }
-    }
 }

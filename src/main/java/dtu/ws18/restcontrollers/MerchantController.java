@@ -7,6 +7,7 @@ import dtu.ws18.messagingutils.RabbitMQValues;
 import dtu.ws18.models.Event;
 import dtu.ws18.models.EventType;
 import dtu.ws18.models.Merchant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,15 +18,14 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/merchants")
-public class MerchantController implements IEventReceiver {
-    private CompletableFuture<String> merchantDeleteFuture;
-    private CompletableFuture<Merchant> merchantGetFuture;
-    private CompletableFuture<String> merchantPostFuture;
-    private ObjectMapper objectMapper;
+public class MerchantController {
+    static CompletableFuture<String> merchantDeleteFuture;
+    static CompletableFuture<Merchant> merchantGetFuture;
+    static CompletableFuture<String> merchantPostFuture;
     private IEventSender eventSender;
 
+    @Autowired
     public MerchantController(IEventSender eventSender) {
-        this.objectMapper = new ObjectMapper();
         this.eventSender = eventSender;
     }
 
@@ -64,20 +64,6 @@ public class MerchantController implements IEventReceiver {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-    @Override
-    public void receiveEvent(Event event) {
-        if (event.getType().equals(EventType.CREATE_MERCHANT_RESPONSE)) {
-            String response = objectMapper.convertValue(event.getObject(), String.class);
-            merchantPostFuture.complete(response);
-        } else if (event.getType().equals(EventType.DELETE_MERCHANT_RESPONSE)) {
-            String response = objectMapper.convertValue(event.getObject(), String.class);
-            merchantDeleteFuture.complete(response);
-        } else if (event.getType().equals(EventType.RETRIEVE_MERCHANT_RESPONSE)) {
-            Merchant response = objectMapper.convertValue(event.getObject(), Merchant.class);
-            merchantGetFuture.complete(response);
-        }
     }
 }
 

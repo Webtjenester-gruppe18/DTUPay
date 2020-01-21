@@ -6,6 +6,14 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import dtu.ws18.models.Event;
 import gherkin.deps.com.google.gson.Gson;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarables;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 /*
 Boilerplate from @Author Hubert Baumeister demoproject
@@ -25,8 +33,8 @@ public class EventReceiverImpl {
 
     public EventReceiverImpl(IEventReceiver eventReceiver) {
         this.eventReceiver = eventReceiver;
-    }
 
+    }
     public void listen() throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         Connection connection = factory.newConnection();

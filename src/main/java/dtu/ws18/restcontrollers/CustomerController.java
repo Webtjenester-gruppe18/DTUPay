@@ -1,7 +1,5 @@
 package dtu.ws18.restcontrollers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import dtu.ws18.messagingutils.IEventReceiver;
 import dtu.ws18.messagingutils.IEventSender;
 import dtu.ws18.messagingutils.RabbitMQValues;
 import dtu.ws18.models.Customer;
@@ -16,18 +14,15 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/customers")
-public class CustomerController implements IEventReceiver {
-    private CompletableFuture<String> customerDeleteFuture;
-    private CompletableFuture<Customer> customerGetFuture;
-    private CompletableFuture<String> customerPostFuture;
-    private ObjectMapper objectMapper;
+public class CustomerController {
+    static CompletableFuture<String> customerDeleteFuture;
+    static CompletableFuture<Customer> customerGetFuture;
+    static CompletableFuture<String> customerPostFuture;
     private IEventSender eventSender;
 
     public CustomerController(IEventSender eventSender) {
-        this.objectMapper = new ObjectMapper();
         this.eventSender = eventSender;
     }
-
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.GET)
     public ResponseEntity<Object> getCustomerByCpr(@PathVariable @NotNull String cpr) throws Exception {
@@ -65,20 +60,6 @@ public class CustomerController implements IEventReceiver {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @Override
-    public void receiveEvent(Event event) {
-        if (event.getType().equals(EventType.CREATE_CUSTOMER_RESPONSE)) {
-            String response = objectMapper.convertValue(event.getObject(), String.class);
-            customerPostFuture.complete(response);
-        } else if (event.getType().equals(EventType.DELETE_CUSTOMER_RESPONSE)) {
-            String response = objectMapper.convertValue(event.getObject(), String.class);
-            customerDeleteFuture.complete(response);
-        } else if (event.getType().equals(EventType.RETRIEVE_CUSTOMER_RESPONSE)) {
-            Customer response = objectMapper.convertValue(event.getObject(), Customer.class);
-            customerGetFuture.complete(response);
-        }
-
-    }
 }
 
 

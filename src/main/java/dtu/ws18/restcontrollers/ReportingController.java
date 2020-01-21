@@ -20,15 +20,13 @@ import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-public class ReportingController implements IEventReceiver {
-    private CompletableFuture<ArrayList<DTUPayTransaction>> reportFuture;
+public class ReportingController {
+    static CompletableFuture<ArrayList<DTUPayTransaction>> reportFuture;
     private IEventSender eventSender;
-    private ObjectMapper objectMapper;
 
     @Autowired
     public ReportingController(IEventSender eventSender) {
         this.eventSender = eventSender;
-        this.objectMapper = new ObjectMapper();
 
     }
 
@@ -39,13 +37,5 @@ public class ReportingController implements IEventReceiver {
         this.eventSender.sendEvent(requestTransactions);
         ArrayList<DTUPayTransaction> response = reportFuture.join();
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @Override
-    public void receiveEvent(Event event) throws Exception {
-        if (event.getType().equals(EventType.REQUEST_TRANSACTIONS_SUCCEED)) {
-            ArrayList<DTUPayTransaction> transactions = objectMapper.convertValue(event.getObject(), ArrayList.class);
-            reportFuture.complete(transactions);
-        }
     }
 }

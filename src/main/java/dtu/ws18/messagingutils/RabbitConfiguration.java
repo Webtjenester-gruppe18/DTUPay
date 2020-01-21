@@ -1,18 +1,20 @@
 package dtu.ws18.messagingutils;
 
+import javassist.expr.Instanceof;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
+
+@Component
 @Configuration
 public class RabbitConfiguration {
-    @Bean
-    public MessageConverter jsonConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
     @Bean
     public Declarables topicBindings() {
         Queue payment_service_queue = new Queue(RabbitMQValues.PAYMENT_SERVICE_QUEUE_NAME, true);
@@ -21,7 +23,7 @@ public class RabbitConfiguration {
         Queue user_service_queue = new Queue(RabbitMQValues.USER_SERVICE_QUEUE_NAME, true);
         Queue reporting_service_queue = new Queue(RabbitMQValues.REPORTING_SERVICE_QUEUE_NAME, true);
 
-       TopicExchange topicExchange = new TopicExchange(RabbitMQValues.TOPIC_EXCHANGE_NAME);
+        TopicExchange topicExchange = new TopicExchange(RabbitMQValues.TOPIC_EXCHANGE_NAME);
         return new Declarables(
                 payment_service_queue,
                 token_service_queue,
@@ -46,5 +48,8 @@ public class RabbitConfiguration {
                         .to(topicExchange).with(RabbitMQValues.REPORTING_SERVICE_ROUTING_KEY));
     }
 
-
+    @Bean
+    public MessageConverter jsonConverter() {
+        return new Jackson2JsonMessageConverter();
+    }
 }
