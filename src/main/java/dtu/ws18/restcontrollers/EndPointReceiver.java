@@ -64,13 +64,10 @@ public class EndPointReceiver implements IEventReceiver {
                 PaymentController.paymentFuture.complete(event);
                 break;
             case REFUND_FAILED:
-                System.out.println("Jeg er inde...");
-                PaymentController.refundFuture.complete(event);
-                break;
             case REFUND_SUCCEED:
-                System.out.println("Jeg er UDE...");
                 PaymentController.refundFuture.complete(event);
                 break;
+
         }
 
     }
