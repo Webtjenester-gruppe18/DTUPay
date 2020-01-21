@@ -14,9 +14,10 @@ import java.util.ArrayList;
  * @author emil_s175107
  */
 public class EndPointReceiver implements IEventReceiver {
+
     private ObjectMapper objectMapper;
 
-    public EndPointReceiver() {
+    public EndPointReceiver()  {
         this.objectMapper = new ObjectMapper();
     }
 

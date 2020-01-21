@@ -7,15 +7,6 @@ import com.rabbitmq.client.DeliverCallback;
 import dtu.ws18.models.Event;
 import gherkin.deps.com.google.gson.Gson;
 import lombok.SneakyThrows;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.Declarables;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 
 /*
@@ -27,7 +18,7 @@ public class Listener {
     public Listener(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
-    @RabbitListener(queues = {RabbitMQValues.DTU_SERVICE_QUEUE_NAME})
+
     public void receiveEvent(Event event) { }
 */
 
@@ -50,7 +41,7 @@ public class EventReceiverImpl {
         }
 
 
-            channel.queueBind(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.DTU_SERVICE_ROUTING_KEY); //Change Queuename and routing key
+        channel.queueBind(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, RabbitMQValues.TOPIC_EXCHANGE_NAME, RabbitMQValues.DTU_SERVICE_ROUTING_KEY); //Change Queuename and routing key
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");

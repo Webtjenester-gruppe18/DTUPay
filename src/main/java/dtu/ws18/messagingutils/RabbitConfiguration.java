@@ -22,8 +22,7 @@ public class RabbitConfiguration {
         Queue dtu_service_queue = new Queue(RabbitMQValues.DTU_SERVICE_QUEUE_NAME, true);
         Queue user_service_queue = new Queue(RabbitMQValues.USER_SERVICE_QUEUE_NAME, true);
         Queue reporting_service_queue = new Queue(RabbitMQValues.REPORTING_SERVICE_QUEUE_NAME, true);
-
-        TopicExchange topicExchange = new TopicExchange(RabbitMQValues.TOPIC_EXCHANGE_NAME);
+        TopicExchange topicExchange = new TopicExchange(RabbitMQValues.TOPIC_EXCHANGE_NAME,true,true);
         return new Declarables(
                 payment_service_queue,
                 token_service_queue,
