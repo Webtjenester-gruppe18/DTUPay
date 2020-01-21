@@ -22,8 +22,9 @@ public class EndPointReceiver implements IEventReceiver {
         String response;
 
         switch (event.getType()) {
-            case TOKEN_GENERATION_RESPONSE:
-                TokenController.tokenFuture.complete(event.getType());
+            case TOKEN_GENERATION_RESPONSE_SUCCESS:
+            case TOKEN_GENERATION_RESPONSE_FAILED:
+                TokenController.tokenFuture.complete(event);
                 break;
             case RETRIEVE_TOKENS_RESPONSE:
                 ArrayList<Token> tokens = objectMapper.convertValue(event.getObject(), ArrayList.class);
