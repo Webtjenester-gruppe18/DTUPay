@@ -15,6 +15,6 @@ public class RabbitMQValues {
 
 
 
-    public static final String HOST_NAME = "localhost";
+    public static final String HOST_NAME = "rabbitmq";
 
 }
