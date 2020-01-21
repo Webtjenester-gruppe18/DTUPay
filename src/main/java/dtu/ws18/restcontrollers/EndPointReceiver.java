@@ -10,15 +10,17 @@ import java.util.ArrayList;
  * @author emil_s175107
  */
 public class EndPointReceiver implements IEventReceiver {
+
     private ObjectMapper objectMapper;
 
-    public EndPointReceiver() {
+    public EndPointReceiver()  {
         this.objectMapper = new ObjectMapper();
     }
 
     @Override
     public void receiveEvent(Event event) throws Exception {
         String response;
+
         switch (event.getType()) {
             case TOKEN_GENERATION_RESPONSE:
                 TokenController.tokenFuture.complete(event.getType());
@@ -59,13 +61,10 @@ public class EndPointReceiver implements IEventReceiver {
                 PaymentController.paymentFuture.complete(event);
                 break;
             case REFUND_FAILED:
-                System.out.println("Jeg er inde...");
-                PaymentController.refundFuture.complete(event);
-                break;
             case REFUND_SUCCEED:
-                System.out.println("Jeg er UDE...");
                 PaymentController.refundFuture.complete(event);
                 break;
+
         }
 
     }

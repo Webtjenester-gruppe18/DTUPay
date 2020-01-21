@@ -21,7 +21,7 @@ public class EventSenderImpl implements IEventSender {
     private RabbitTemplate rabbitTemplate;
 
     @Autowired
-    public EventSenderImpl(RabbitTemplate rabbitTemplate) {
+    public EventSenderImpl(RabbitTemplate rabbitTemplate) throws InterruptedException {
         this.rabbitTemplate = rabbitTemplate;
 
     }
