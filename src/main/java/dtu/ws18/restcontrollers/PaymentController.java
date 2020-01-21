@@ -49,15 +49,16 @@ public class PaymentController {
     @RequestMapping(value = "/refunds", method = RequestMethod.POST)
     public ResponseEntity<String> createRefund(@RequestBody DTUPayTransaction transaction) throws Exception {
 
+        System.out.println("Jeg er her...");
         Event requestEvent = new Event(EventType.REFUND_REQUEST, transaction, RabbitMQValues.PAYMENT_SERVICE_ROUTING_KEY);
         refundFuture = new CompletableFuture<>();
         eventSender.sendEvent(requestEvent);
         Event event = refundFuture.join();
         String response = objectMapper.convertValue(event.getObject(), String.class);
 
-        if (event.getType().equals(EventType.REFUND_REQUEST_RESPONSE)) {
+        if (event.getType().equals(EventType.REFUND_SUCCEED)) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

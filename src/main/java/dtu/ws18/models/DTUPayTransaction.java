@@ -1,9 +1,14 @@
 package dtu.ws18.models;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class DTUPayTransaction {
+@NoArgsConstructor
+public class DTUPayTransaction implements Serializable {
 
     private String transactionId;
     private BigDecimal amount;
