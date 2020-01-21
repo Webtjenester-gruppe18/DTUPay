@@ -1,5 +1,9 @@
 package dtu.ws18.models;
 
+/**
+ * @author Emil Glimø Vinkel - s175107
+ */
+
 public enum EventType {
     //Retrieve customer profile
     RETRIEVE_CUSTOMER,

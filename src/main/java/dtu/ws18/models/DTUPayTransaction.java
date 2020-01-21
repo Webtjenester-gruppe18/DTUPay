@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+/**
+ * @author Emil Glimø Vinkel - s175107
+ */
+
 @NoArgsConstructor
 public class DTUPayTransaction implements Serializable {
 

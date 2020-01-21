@@ -18,6 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @author Marcus August Christiansen - s175185
+ */
+
 @RestController
 public class PaymentController {
     static CompletableFuture<Event> paymentFuture;

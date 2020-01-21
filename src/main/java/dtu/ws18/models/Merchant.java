@@ -1,5 +1,9 @@
 package dtu.ws18.models;
 
+/**
+ * @author Emil Glimø Vinkel - s175107
+ */
+
 public class Merchant extends DTUPayUser {
 
     public Merchant() {

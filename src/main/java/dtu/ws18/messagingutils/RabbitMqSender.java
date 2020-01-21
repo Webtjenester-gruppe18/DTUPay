@@ -8,6 +8,10 @@ import dtu.ws18.models.Event;
 import gherkin.deps.com.google.gson.Gson;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author Emil Glimø Vinkel - s175107
+ */
+
 @Component
 public class RabbitMqSender implements IEventSender {
 

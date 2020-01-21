@@ -6,6 +6,11 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+/**
+ * @author Emil Glimø Vinkel - s175107
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor

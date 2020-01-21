@@ -6,6 +6,10 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
+/**
+ * @author Emil Glimø Vinkel - s175107
+ */
+
 @Getter
 @Setter
 @NoArgsConstructor

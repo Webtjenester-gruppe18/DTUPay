@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @author Marcus August Christiansen - s175185
+ */
 
 @RestController
 @RequestMapping("/merchants")

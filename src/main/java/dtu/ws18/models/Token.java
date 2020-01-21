@@ -6,6 +6,10 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * @author Emil Glimø Vinkel - s175107
+ */
+
 @Getter
 @Setter
 public class Token implements Serializable {
