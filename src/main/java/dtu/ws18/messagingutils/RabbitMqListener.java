@@ -8,9 +8,8 @@ import dtu.ws18.models.Event;
 import gherkin.deps.com.google.gson.Gson;
 
 /**
- * @author Emil Glimø Vinkel - s175107
+ * 	Provided code from the instructor
  */
-
 public class RabbitMqListener {
 
 	IEventReceiver service;
