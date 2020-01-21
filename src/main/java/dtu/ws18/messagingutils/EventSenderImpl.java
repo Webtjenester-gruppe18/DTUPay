@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 /**
  * @author emil_s175107
  */
-@Component
+
 public class EventSenderImpl implements IEventSender {
     private RabbitTemplate rabbitTemplate;
 

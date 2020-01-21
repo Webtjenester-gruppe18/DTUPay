@@ -1,6 +1,6 @@
 package dtu.ws18;
 
-import dtu.ws18.messagingutils.EventReceiverImpl;
+import dtu.ws18.messagingutils.RabbitMqListener;
 import dtu.ws18.restcontrollers.EndPointReceiver;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +19,7 @@ public class DtupayApplication {
     private void startUp()  {
         try {
             EndPointReceiver endPointReceiver = new EndPointReceiver();
-            new EventReceiverImpl(endPointReceiver).listen();
+            new RabbitMqListener(endPointReceiver).listen();
         } catch (Exception e) {
             e.printStackTrace();
         }

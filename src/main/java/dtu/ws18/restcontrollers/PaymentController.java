@@ -42,14 +42,14 @@ public class PaymentController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else if (responseEvent.getType().equals(EventType.MONEY_TRANSFER_FAILED)) {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } else if (responseEvent.getType().equals(EventType.TOKEN_VALIDATION_FAILED)) {
+            return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
         return new ResponseEntity<>("Something went wrong", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = "/refunds", method = RequestMethod.POST)
     public ResponseEntity<String> createRefund(@RequestBody DTUPayTransaction transaction) throws Exception {
-
-        System.out.println("Jeg er her...");
         Event requestEvent = new Event(EventType.REFUND_REQUEST, transaction, RabbitMQValues.PAYMENT_SERVICE_ROUTING_KEY);
         refundFuture = new CompletableFuture<>();
         eventSender.sendEvent(requestEvent);

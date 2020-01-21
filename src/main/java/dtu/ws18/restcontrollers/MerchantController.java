@@ -20,26 +20,32 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/merchants")
 public class MerchantController {
     static CompletableFuture<String> merchantDeleteFuture;
-    static CompletableFuture<Merchant> merchantGetFuture;
+    static CompletableFuture<Event> merchantGetFuture;
     static CompletableFuture<String> merchantPostFuture;
     private IEventSender eventSender;
+    private ObjectMapper mapper;
 
     @Autowired
     public MerchantController(IEventSender eventSender) {
         this.eventSender = eventSender;
+        this.mapper = new ObjectMapper();
     }
 
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.GET)
-    public ResponseEntity<Merchant> getMerchantByCpr(@PathVariable @NotNull String cpr) throws Exception {
+    public ResponseEntity<Object> getMerchantByCpr(@PathVariable @NotNull String cpr) throws Exception {
         Event merchantRequest = new Event(EventType.RETRIEVE_MERCHANT, cpr, RabbitMQValues.USER_SERVICE_ROUTING_KEY);
         eventSender.sendEvent(merchantRequest);
         merchantGetFuture = new CompletableFuture<>();
-        Merchant merchant = merchantGetFuture.join();
-        if (merchant != null) {
+
+        Event event = merchantGetFuture.join();
+        if (event.getType().equals(EventType.RETRIEVE_MERCHANT_RESPONSE_SUCCESS)) {
+            Merchant merchant = mapper.convertValue(event.getObject(), Merchant.class);
             return new ResponseEntity<>(merchant, HttpStatus.OK);
         }
-        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+
+        String error = mapper.convertValue(event.getObject(), String.class);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -49,7 +55,7 @@ public class MerchantController {
         merchantPostFuture = new CompletableFuture<>();
         String response = merchantPostFuture.join();
         if (response.equals("Created")) {
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            return new ResponseEntity<>(merchant.getCprNumber(), HttpStatus.CREATED);
         }
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

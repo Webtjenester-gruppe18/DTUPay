@@ -26,6 +26,9 @@ public class EndPointReceiver implements IEventReceiver {
             case TOKEN_GENERATION_RESPONSE_FAILED:
                 TokenController.tokenFuture.complete(event);
                 break;
+            case TOKEN_VALIDATION_FAILED:
+                PaymentController.paymentFuture.complete(event);
+                break;
             case RETRIEVE_TOKENS_RESPONSE:
                 ArrayList<Token> tokens = objectMapper.convertValue(event.getObject(), ArrayList.class);
                 TokenController.tokenListFuture.complete(tokens);
@@ -50,15 +53,16 @@ public class EndPointReceiver implements IEventReceiver {
                 response = objectMapper.convertValue(event.getObject(), String.class);
                 MerchantController.merchantDeleteFuture.complete(response);
                 break;
-            case RETRIEVE_MERCHANT_RESPONSE:
-                Merchant merchant = objectMapper.convertValue(event.getObject(), Merchant.class);
-                MerchantController.merchantGetFuture.complete(merchant);
+            case RETRIEVE_MERCHANT_RESPONSE_SUCCESS:
+            case RETRIEVE_MERCHANT_RESPONSE_FAILED:
+                MerchantController.merchantGetFuture.complete(event);
                 break;
             case REQUEST_TRANSACTIONS_SUCCEED:
                 ArrayList<DTUPayTransaction> transactions = objectMapper.convertValue(event.getObject(), ArrayList.class);
                 ReportingController.reportFuture.complete(transactions);
                 break;
             case MONEY_TRANSFER_SUCCEED:
+            case MONEY_TRANSFER_FAILED:
                 PaymentController.paymentFuture.complete(event);
                 break;
             case REFUND_FAILED:

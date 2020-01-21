@@ -13,4 +13,8 @@ public class RabbitMQValues {
     public static final String REPORTING_SERVICE_QUEUE_NAME = "reportingservice-queue";
     public static final String REPORTING_SERVICE_ROUTING_KEY = "reporting";
 
+
+
+    public static final String HOST_NAME = "localhost";
+
 }
