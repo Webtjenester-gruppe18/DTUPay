@@ -22,8 +22,9 @@ public class EndPointReceiver implements IEventReceiver {
         String response;
 
         switch (event.getType()) {
-            case TOKEN_GENERATION_RESPONSE:
-                TokenController.tokenFuture.complete(event.getType());
+            case TOKEN_GENERATION_RESPONSE_SUCCESS:
+            case TOKEN_GENERATION_RESPONSE_FAILED:
+                TokenController.tokenFuture.complete(event);
                 break;
             case RETRIEVE_TOKENS_RESPONSE:
                 ArrayList<Token> tokens = objectMapper.convertValue(event.getObject(), ArrayList.class);
@@ -37,9 +38,9 @@ public class EndPointReceiver implements IEventReceiver {
                 response = objectMapper.convertValue(event.getObject(), String.class);
                 CustomerController.customerDeleteFuture.complete(response);
                 break;
-            case RETRIEVE_CUSTOMER_RESPONSE:
-                Customer customer = objectMapper.convertValue(event.getObject(), Customer.class);
-                CustomerController.customerGetFuture.complete(customer);
+            case RETRIEVE_CUSTOMER_RESPONSE_SUCCESS:
+            case RETRIEVE_CUSTOMER_RESPONSE_FAILED:
+                CustomerController.customerGetFuture.complete(event);
                 break;
             case CREATE_MERCHANT_RESPONSE:
                 response = objectMapper.convertValue(event.getObject(), String.class);

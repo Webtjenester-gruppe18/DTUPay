@@ -1,5 +1,6 @@
 package dtu.ws18.restcontrollers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dtu.ws18.messagingutils.IEventSender;
 import dtu.ws18.messagingutils.RabbitMQValues;
 import dtu.ws18.models.Customer;
@@ -16,12 +17,14 @@ import java.util.concurrent.CompletableFuture;
 @RequestMapping("/customers")
 public class CustomerController {
     static CompletableFuture<String> customerDeleteFuture;
-    static CompletableFuture<Customer> customerGetFuture;
+    static CompletableFuture<Event> customerGetFuture;
     static CompletableFuture<String> customerPostFuture;
     private IEventSender eventSender;
+    private ObjectMapper mapper;
 
     public CustomerController(IEventSender eventSender) {
         this.eventSender = eventSender;
+        this.mapper = new ObjectMapper();
     }
 
     @RequestMapping(value = "/{cpr}", method = RequestMethod.GET)
@@ -29,11 +32,14 @@ public class CustomerController {
         Event customerRequest = new Event(EventType.RETRIEVE_CUSTOMER, cpr, RabbitMQValues.USER_SERVICE_ROUTING_KEY);
         this.eventSender.sendEvent(customerRequest);
         customerGetFuture = new CompletableFuture<>();
-        Customer customer = customerGetFuture.join();
-        if (customer != null) {
+        Event event = customerGetFuture.join();
+        if (event.getType().equals(EventType.RETRIEVE_CUSTOMER_RESPONSE_SUCCESS)) {
+            Customer customer = mapper.convertValue(event.getObject(), Customer.class);
             return new ResponseEntity<>(customer, HttpStatus.OK);
         }
-        return new ResponseEntity<>("Customer with that cpr not found", HttpStatus.NOT_FOUND);
+
+        String error = mapper.convertValue(event.getObject(), String.class);
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -43,7 +49,7 @@ public class CustomerController {
         customerPostFuture = new CompletableFuture<>();
         String response = customerPostFuture.join();
         if (response.equals("Created")) {
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
+            return new ResponseEntity<>(customer.getCprNumber(), HttpStatus.CREATED);
         }
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

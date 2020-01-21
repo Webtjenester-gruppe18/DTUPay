@@ -1,5 +1,6 @@
 package dtu.ws18.restcontrollers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dtu.ws18.messagingutils.IEventSender;
 import dtu.ws18.messagingutils.RabbitMQValues;
 import dtu.ws18.models.Event;
@@ -20,12 +21,14 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 public class TokenController {
     private IEventSender eventSender;
-    static CompletableFuture<EventType> tokenFuture;
+    static CompletableFuture<Event> tokenFuture;
     static CompletableFuture<ArrayList<Token>> tokenListFuture;
+    private ObjectMapper mapper;
 
     @Autowired
     public TokenController(IEventSender eventSender) {
         this.eventSender = eventSender;
+        this.mapper = new ObjectMapper();
     }
 
 
@@ -43,12 +46,20 @@ public class TokenController {
     }
 
     @RequestMapping(value = "/tokens/{cpr}", method = RequestMethod.POST)
-    public EventType createTokensByCpr(@PathVariable @NotNull String cpr) throws Exception {
+    public ResponseEntity<Object> createTokensByCpr(@PathVariable @NotNull String cpr) throws Exception {
 
         Event tokenRequest = new Event(EventType.REQUEST_FOR_NEW_TOKENS, cpr, RabbitMQValues.TOKEN_SERVICE_ROUTING_KEY);
         tokenFuture = new CompletableFuture<>();
         eventSender.sendEvent(tokenRequest);
-        return tokenFuture.join();
+
+        Event event = tokenFuture.join();
+
+        if (event.getType().equals(EventType.TOKEN_GENERATION_RESPONSE_SUCCESS)) {
+            return new ResponseEntity<>("Tokens is generated.", HttpStatus.OK);
+        }
+
+        String error = mapper.convertValue(event.getObject(), String.class);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
 }
