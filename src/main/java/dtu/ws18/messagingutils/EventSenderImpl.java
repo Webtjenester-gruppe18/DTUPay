@@ -20,14 +20,27 @@ import org.springframework.stereotype.Component;
 public class EventSenderImpl implements IEventSender {
     private RabbitTemplate rabbitTemplate;
 
-    @Autowired
-    public EventSenderImpl(RabbitTemplate rabbitTemplate) throws InterruptedException {
-        this.rabbitTemplate = rabbitTemplate;
-
+    public EventSenderImpl() {
+        this.rabbitTemplate = getRabbitTemplate();
     }
 
     @Override
     public void sendEvent(Event event) throws Exception {
         this.rabbitTemplate.convertAndSend(RabbitMQValues.TOPIC_EXCHANGE_NAME, event.getRoutingKey(), event);
+    }
+
+    private RabbitTemplate getRabbitTemplate() {
+        CachingConnectionFactory connectionFactory =
+                /*new CachingConnectionFactory("localhost");*/ new CachingConnectionFactory("rabbitmq");
+        connectionFactory.setUsername("guest");
+        connectionFactory.setPassword("guest");
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(jsonConverter());
+        return rabbitTemplate;
+    }
+
+    @Bean
+    public MessageConverter jsonConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 }

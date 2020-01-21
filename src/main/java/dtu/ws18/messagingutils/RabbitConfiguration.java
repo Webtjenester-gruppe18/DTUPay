@@ -46,9 +46,5 @@ public class RabbitConfiguration {
                         .bind(reporting_service_queue)
                         .to(topicExchange).with(RabbitMQValues.REPORTING_SERVICE_ROUTING_KEY));
     }
-
-    @Bean
-    public MessageConverter jsonConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
+    
 }

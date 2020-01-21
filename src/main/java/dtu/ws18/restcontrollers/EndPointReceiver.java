@@ -3,10 +3,6 @@ package dtu.ws18.restcontrollers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dtu.ws18.messagingutils.IEventReceiver;
 import dtu.ws18.models.*;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
@@ -17,7 +13,7 @@ public class EndPointReceiver implements IEventReceiver {
 
     private ObjectMapper objectMapper;
 
-    public EndPointReceiver()  {
+    public EndPointReceiver() {
         this.objectMapper = new ObjectMapper();
     }
 
